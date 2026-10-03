@@ -39,6 +39,10 @@ class Program
 
         services.AddTransient<ConsoleMenu>();
 
+        services.AddTransient<
+            IWeatherFormatter,
+            ConsoleWeatherFormatter>();
+
         ServiceProvider serviceProvider =
             services.BuildServiceProvider();
 

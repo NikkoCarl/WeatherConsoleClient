@@ -6,10 +6,14 @@ namespace WeatherConsoleClient.Presentation;
 public class ConsoleMenu
 {
     private readonly IWeatherService _weatherService;
+    private readonly IWeatherFormatter _weatherFormatter;
 
-    public ConsoleMenu(IWeatherService weatherService)
+    public ConsoleMenu(
+        IWeatherService weatherService,
+        IWeatherFormatter weatherFormatter)
     {
         _weatherService = weatherService;
+        _weatherFormatter = weatherFormatter;
     }
 
     public async Task RunAsync(
@@ -109,29 +113,8 @@ public class ConsoleMenu
             return;
         }
 
-        Console.WriteLine();
-        Console.WriteLine("========================================");
-        Console.WriteLine("CURRENT WEATHER");
-        Console.WriteLine("========================================");
-
-        Console.WriteLine($"City        : {weather.Name}");
         Console.WriteLine(
-            $"Temperature : {weather.Main.Temperature:F2} °C");
-        Console.WriteLine(
-            $"Feels Like  : {weather.Main.FeelsLike:F2} °C");
-        Console.WriteLine(
-            $"Humidity    : {weather.Main.Humidity}%");
-        Console.WriteLine(
-            $"Pressure    : {weather.Main.Pressure} hPa");
-
-        if (weather.Weather.Count > 0)
-        {
-            Console.WriteLine(
-                $"Condition   : {weather.Weather[0].Description}");
-        }
-
-        Console.WriteLine(
-            $"Wind Speed  : {weather.Wind.Speed:F2} m/s");
+            _weatherFormatter.FormatCurrentWeather(weather));
     }
 
     private async Task ShowForecastAsync(
@@ -158,31 +141,8 @@ public class ConsoleMenu
             return;
         }
 
-        Console.WriteLine();
-        Console.WriteLine("========================================");
-        Console.WriteLine("5-DAY / 3-HOUR FORECAST");
-        Console.WriteLine("========================================");
-        Console.WriteLine();
         Console.WriteLine(
-            $"City: {forecast.City.Name}");
-        Console.WriteLine();
-
-        foreach (ForecastItemDto item in forecast.Items)
-        {
-            string condition =
-                item.Weather.Count > 0
-                    ? item.Weather[0].Description
-                    : "Unknown";
-
-            decimal rain =
-                item.RainProbability * 100;
-
-            Console.WriteLine(
-                $"{item.DateTimeText}  " +
-                $"{item.Main.Temperature:F1} °C  " +
-                $"{condition}  " +
-                $"{rain:F0}%");
-        }
+            _weatherFormatter.FormatForecast(forecast));
     }
 
     private async Task ShowDashboardAsync(
